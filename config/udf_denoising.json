@@ -20,24 +20,21 @@
                 "name": ["data.dataset", "DenoisingDataset"], // import Dataset() class / function(not recommend) from data.dataset.py (default is [data.dataset.py])
                 "args":{ // arguments to initialize dataset
                     "data_root": "datasets/udf/train.flist",
-                    "data_len": -1,
-                    "mask_config": {
-                        "mask_mode": "hybrid"
-                    }
+                    "data_len": -1
                 } 
             },
             "dataloader":{
                 "validation_split": 2, // percent or number 
                 "args":{ // arguments to initialize train_dataloader
-                    "batch_size": 3, // batch size in each gpu
-                    "num_workers": 4,
+                    "batch_size": 40, // batch size in each gpu
+                    "num_workers": 3,
                     "shuffle": true,
                     "pin_memory": true,
-                    "drop_last": true
+                    "drop_last": false
                 },
                 "val_args":{ // arguments to initialize valid_dataloader, will overwrite the parameters in train_dataloader
-                    "batch_size": 1, // batch size in each gpu
-                    "num_workers": 4,
+                    "batch_size": 10, // batch size in each gpu
+                    "num_workers": 1,
                     "shuffle": false,
                     "pin_memory": true,
                     "drop_last": false
@@ -48,10 +45,7 @@
             "which_dataset": {
                 "name": "DenoisingDataset", // import Dataset() class / function(not recommend) from default file
                 "args":{
-                    "data_root": "datasets/udf/test.flist",
-                    "mask_config": {
-                        "mask_mode": "center"
-                    }
+                    "data_root": "datasets/udf/test.flist"
                 }
             },
             "dataloader":{
@@ -87,8 +81,8 @@
                     "init_type": "kaiming", // method can be [normal | xavier| xavier_uniform | kaiming | orthogonal], default is kaiming
                     "module_name": "guided_diffusion", // sr3 | guided_diffusion
                     "unet": {
-                        "in_channel": 6,
-                        "out_channel": 3,
+                        "in_channel": 2,
+                        "out_channel": 1,
                         "inner_channel": 64,
                         "channel_mults": [
                             1,

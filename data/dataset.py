@@ -90,8 +90,10 @@ class InpaintDataset(data.Dataset):
 
 # just a simple dataset that removes the mask settings
 class DenoisingDataset(data.Dataset):
-    def __init__(self, train_root, data_len=-1, image_size=[288, 288]):
-        imgs = make_dataset(train_root)
+    def __init__(self, data_root, data_len=-1, image_size=[288, 288]):
+        with open(data_root, "r") as f:
+            imgs = f.readlines()
+        imgs = [img.replace("\n", "") for img in imgs]
         if data_len > 0:
             self.imgs = imgs[:int(data_len)]
         else:
@@ -103,17 +105,22 @@ class DenoisingDataset(data.Dataset):
                 transforms.RandomCrop((image_size[0], image_size[1])),
         ])
         self.to_tensor = transforms.ToTensor()
-        self.normalize = transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5,0.5, 0.5])
-        self.loader = loader
+        self.normalize = transforms.Normalize(mean=[0.5], std=[0.5])
         self.image_size = image_size
 
     def __getitem__(self, index):
         ret = {}
         train = self.imgs[index]
         gt = train.replace("train", "gt")
-        img = torch.stack((self.to_tensor(np.array(Image.open(train))),
-                 self.to_tensor(np.array(Image.open(gt)))), axis = -1)
-        cond_img, img = torch.chunk(img, 2, -1)
+        aa = self.to_tensor(Image.open(train))
+        if aa.shape[0] == 3:
+            aa = aa.mean(dim = 0, keepdim = True)
+        bb = self.to_tensor(Image.open(gt))
+        if bb.shape[0] == 3:
+            bb = bb.mean(dim = 0, keepdim = True)
+        img = torch.cat((aa, bb))
+        img = self.tfs(img)
+        cond_img, img = torch.chunk(img, 2, 0)
         cond_img = self.normalize(cond_img)
         img = self.normalize(img)
         ret['gt_image'] = img

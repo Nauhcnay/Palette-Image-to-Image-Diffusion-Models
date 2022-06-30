@@ -36,7 +36,7 @@ def main_worker(gpu, ngpus_per_node, opt):
     phase_logger.info('Create the log file in directory {}.\n'.format(opt['path']['experiments_root']))
 
     '''set networks and dataset'''
-    # 我们可以在这里换自己的dataloader，然后
+    # we can change our own dataloader here
     phase_loader, val_loader = define_dataloader(phase_logger, opt) # val_loader is None if phase is test.
     networks = [define_network(phase_logger, opt, item_opt) for item_opt in opt['model']['which_networks']]
 

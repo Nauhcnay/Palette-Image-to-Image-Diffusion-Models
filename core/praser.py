@@ -96,6 +96,7 @@ def dict2str(opt, indent_l=1):
 
 def parse(args):
     json_str = ''
+    # remove the comments
     with open(args.config, 'r') as f:
         for line in f:
             line = line.split('//')[0] + '\n'
