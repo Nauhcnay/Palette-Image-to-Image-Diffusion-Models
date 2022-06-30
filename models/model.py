@@ -60,8 +60,8 @@ class Palette(BaseModel):
         ''' must use set_device in tensor '''
         self.cond_image = self.set_device(data.get('cond_image'))
         self.gt_image = self.set_device(data.get('gt_image'))
-        self.mask = self.set_device(data.get('mask'))
-        self.mask_image = data.get('mask_image')
+        # self.mask = self.set_device(data.get('mask'))
+        # self.mask_image = data.get('mask_image')
         self.path = data['path']
     
     def get_current_visuals(self, phase='train'):
@@ -100,13 +100,15 @@ class Palette(BaseModel):
         self.results_dict = self.results_dict._replace(name=ret_path, result=ret_result)
         return self.results_dict._asdict()
 
+    # we need to remove the mask reading things
     def train_step(self):
         self.netG.train()
         self.train_metrics.reset()
         for train_data in tqdm.tqdm(self.phase_loader):
             self.set_input(train_data)
             self.optG.zero_grad()
-            loss = self.netG(self.gt_image, self.cond_image, mask=self.mask)
+            # loss = self.netG(self.gt_image, self.cond_image, mask=self.mask)
+            loss = self.netG(self.gt_image, self.cond_image)
             loss.backward()
             self.optG.step()
 

@@ -10,6 +10,8 @@ import core.util as Util
 from data import define_dataloader
 from models import create_model, define_network, define_loss, define_metric
 
+__spec__ = None # this is for pdb debug
+
 def main_worker(gpu, ngpus_per_node, opt):
     """  threads running on each GPU """
     if 'local_rank' not in opt:
@@ -34,6 +36,7 @@ def main_worker(gpu, ngpus_per_node, opt):
     phase_logger.info('Create the log file in directory {}.\n'.format(opt['path']['experiments_root']))
 
     '''set networks and dataset'''
+    # 我们可以在这里换自己的dataloader，然后
     phase_loader, val_loader = define_dataloader(phase_logger, opt) # val_loader is None if phase is test.
     networks = [define_network(phase_logger, opt, item_opt) for item_opt in opt['model']['which_networks']]
 
@@ -64,9 +67,9 @@ def main_worker(gpu, ngpus_per_node, opt):
         
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', type=str, default='config/colorization_mirflickr25k.json', help='JSON file for configuration')
+    parser.add_argument('-c', '--config', type=str, default='config/udf_denoising.json', help='JSON file for configuration')
     parser.add_argument('-p', '--phase', type=str, choices=['train','test'], help='Run train or test', default='train')
-    parser.add_argument('-b', '--batch', type=int, default=None, help='Batch size in every gpu')
+    parser.add_argument('-b', '--batch', type=int, default=4, help='Batch size in every gpu')
     parser.add_argument('-gpu', '--gpu_ids', type=str, default=None)
     parser.add_argument('-d', '--debug', action='store_true')
     parser.add_argument('-P', '--port', default='21012', type=str)
