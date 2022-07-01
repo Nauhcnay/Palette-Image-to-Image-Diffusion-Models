@@ -26,7 +26,7 @@
             "dataloader":{
                 "validation_split": 8, // percent or number 
                 "args":{ // arguments to initialize train_dataloader
-                    "batch_size": 60, // batch size in each gpu
+                    "batch_size": 100, // batch size in each gpu
                     "num_workers": 0,
                     "shuffle": true,
                     "pin_memory": true,
