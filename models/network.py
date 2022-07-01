@@ -99,7 +99,7 @@ class Network(BaseNetwork):
             if mask is not None:
                 y_t = y_0*(1.-mask) + mask*y_t
             if i % sample_inter == 0:
-                ret_arr = torch.cat([ret_arr, y_t], dim=0)
+                ret_arr = torch.cat([ret_arr, y_t], dim=-1)
         return y_t, ret_arr
 
     def forward(self, y_0, y_cond=None, mask=None, noise=None):

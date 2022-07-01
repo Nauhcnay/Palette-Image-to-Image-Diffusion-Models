@@ -24,7 +24,7 @@
                 } 
             },
             "dataloader":{
-                "validation_split": 0.1, // percent or number 
+                "validation_split": 8, // percent or number 
                 "args":{ // arguments to initialize train_dataloader
                     "batch_size": 60, // batch size in each gpu
                     "num_workers": 0,
@@ -33,7 +33,7 @@
                     "drop_last": true
                 },
                 "val_args":{ // arguments to initialize valid_dataloader, will overwrite the parameters in train_dataloader
-                    "batch_size": 30, // batch size in each gpu
+                    "batch_size": 8, // batch size in each gpu
                     "num_workers": 0,
                     "shuffle": false,
                     "pin_memory": true,
@@ -129,7 +129,7 @@
     "train": { // arguments for basic training
         "n_epoch": 1e8, // max epochs, not limited now
         "n_iter": 1e8, // max interations
-        "val_epoch": 5, // valdation every specified number of epochs
+        "val_epoch": 1, // valdation every specified number of epochs
         "save_checkpoint_epoch": 10,
         "log_iter": 1e3, // log every specified number of iterations
         "tensorboard" : true // tensorboardX enable
