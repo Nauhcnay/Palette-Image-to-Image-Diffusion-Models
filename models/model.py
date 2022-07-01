@@ -88,10 +88,10 @@ class Palette(BaseModel):
             ret_result.append(self.gt_image[idx].detach().float().cpu())
 
             ret_path.append('Process_{}'.format(self.path[idx]))
-            ret_result.append(self.visuals[idx::self.batch_size].detach().float().cpu())
+            ret_result.append(self.visuals[idx].detach().float().cpu())
             
             ret_path.append('Out_{}'.format(self.path[idx]))
-            ret_result.append(self.visuals[idx-self.batch_size].detach().float().cpu())
+            ret_result.append(self.output[idx].detach().float().cpu())
         
         if self.task in ['inpainting','uncropping']:
             ret_path.extend(['Mask_{}'.format(name) for name in self.path])
