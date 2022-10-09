@@ -138,16 +138,20 @@ class DenoisingDataset(data.Dataset):
         return len(self.imgs)
 
 class ShadingDataset(data.Dataset):
-    def __init__(self, data_root, data_len=-1, image_size=[256, 256], resize = 1024):
+    def __init__(self, data_root, data_len=-1, image_size=[256, 256], resize = 1024, val = False):
         self.img_path = data_root
         self.resize = resize
+        self.val = val
         if exists(join(self.img_path, "img_list_dm.txt")) == False:
             self.scan_imgs()
         with open(join(self.img_path, "img_list_dm.txt"), 'r') as f:
             imgs = f.readlines()
 
         imgs = [img.replace("\n", "") for img in imgs]
-        self.imgs = imgs
+        if val:
+            self.imgs = imgs[-8:]
+        else:
+            self.imgs = imgs[:-8]
         self.image_size = image_size
         self.to_dir_label = {"right": 0.25, "left":0.5, "back":0.75, "top":1.0}
         self.lable_flip = {0.25:0.5, 0.5:0.25}
@@ -289,10 +293,11 @@ class ShadingDataset(data.Dataset):
         shad_np = cv2.resize(shad_np, (w, h), interpolation = cv2.INTER_NEAREST)
 
         # random flip and crop to patches
-        img_list, label = self.random_flip([flat_np, shad_np], label)
-        flat_np, shad_np = img_list
-        bbox = self.random_bbox(flat_np)
-        flat_np, shad_np = self.crop([flat_np, shad_np], bbox)
+        if self.val == False:
+            img_list, label = self.random_flip([flat_np, shad_np], label)
+            flat_np, shad_np = img_list
+            bbox = self.random_bbox(flat_np)
+            flat_np, shad_np = self.crop([flat_np, shad_np], bbox)
         
         # clip values
         flat_np = flat_np.clip(0, 255)
