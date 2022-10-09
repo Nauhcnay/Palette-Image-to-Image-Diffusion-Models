@@ -276,7 +276,7 @@ class ShadingDataset(data.Dataset):
         # merge line and flat
         flat_np = self.remove_alpha(flat_np)
         flat_np = flat_np * (1 - np.expand_dims(line_np[:, :, 3], axis = -1) / 255)
-        flat_np = cv2.cvtColor(flat_np.astype(np.uint8), cv2.COLOR_RGB2GRAY)
+        # flat_np = cv2.cvtColor(flat_np.astype(np.uint8), cv2.COLOR_RGB2GRAY)
         # line_np = 255 - line_np[:, :, 3] # remove alpha channel, but yes, we use alpha channel as the line drawing
         shad_np = self.remove_alpha(shad_np, gray = True) 
         _, shad_np = cv2.threshold(shad_np, 127, 255, cv2.THRESH_BINARY)

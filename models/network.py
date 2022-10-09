@@ -93,6 +93,7 @@ class Network(BaseNetwork):
         
         # chuan: now the channel of condition image and input image is DIFFERENT
         y_t = default(y_t, lambda: torch.randn((b, 1, h, w)))
+        y_t = y_t.to(y_cond.device)
         ret_arr = y_t
         for i in tqdm(reversed(range(0, self.num_timesteps)), desc='sampling loop time step', total=self.num_timesteps):
             t = torch.full((b,), i, device=y_cond.device, dtype=torch.long)
