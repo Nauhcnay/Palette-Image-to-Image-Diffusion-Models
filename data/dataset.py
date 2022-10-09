@@ -304,8 +304,8 @@ class ShadingDataset(data.Dataset):
         shad = self.to_tensor(1 - shad_np / 255)
 
         # we should keep this part unchanged
-        ret['gt_image'] = shad
-        ret['cond_image'] = flat # the input image
+        ret['gt_image'] = shad.float()
+        ret['cond_image'] = flat.float() # the input image
         ret['path'] = line_path.rsplit("/")[-1].rsplit("\\")[-1]
         # ret['path'] = None
         return ret
