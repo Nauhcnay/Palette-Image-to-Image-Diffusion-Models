@@ -86,12 +86,13 @@ class Network(BaseNetwork):
 
     @torch.no_grad()
     def restoration(self, y_cond, y_t=None, y_0=None, mask=None, sample_num=8):
-        b, *_ = y_cond.shape
+        b, c, h, w = y_cond.shape
 
         assert self.num_timesteps > sample_num, 'num_timesteps must greater than sample_num'
         sample_inter = (self.num_timesteps//sample_num)
         
-        y_t = default(y_t, lambda: torch.randn_like(y_cond))
+        # chuan: now the channel of condition image and input image is DIFFERENT
+        y_t = default(y_t, lambda: torch.randn((b, 1, h, w)))
         ret_arr = y_t
         for i in tqdm(reversed(range(0, self.num_timesteps)), desc='sampling loop time step', total=self.num_timesteps):
             t = torch.full((b,), i, device=y_cond.device, dtype=torch.long)

@@ -193,7 +193,7 @@ class ShadingDataset(data.Dataset):
         return img_d2x
     
     def random_bbox(self, img):
-        h, w, _ = img.shape
+        h, w = img.shape[0], img.shape[1]
         # we generate top, left, bottom, right
         t = np.random.randint(0, h - self.image_size[0] - 1)
         l = np.random.randint(0, w - self.image_size[1] - 1)
@@ -276,6 +276,7 @@ class ShadingDataset(data.Dataset):
         # merge line and flat
         flat_np = self.remove_alpha(flat_np)
         flat_np = flat_np * (1 - np.expand_dims(line_np[:, :, 3], axis = -1) / 255)
+        flat_np = cv2.cvtColor(flat_np.astype(np.uint8), cv2.COLOR_RGB2GRAY)
         # line_np = 255 - line_np[:, :, 3] # remove alpha channel, but yes, we use alpha channel as the line drawing
         shad_np = self.remove_alpha(shad_np, gray = True) 
         _, shad_np = cv2.threshold(shad_np, 127, 255, cv2.THRESH_BINARY)
