@@ -304,7 +304,7 @@ class ShadingDataset(data.Dataset):
         shad_np = shad_np.clip(0, 255)
 
         # to tensors
-        label = torch.Tensor([label]).expand(1, self.image_size[0], self.image_size[1])
+        label = torch.Tensor([label]).expand(1, self.flat_np[0], self.flat_np[1])
         flat = self.to_tensor(flat_np / 255)
         flat = torch.cat((flat, label), dim = 0)
         shad = self.to_tensor(1 - shad_np / 255)
