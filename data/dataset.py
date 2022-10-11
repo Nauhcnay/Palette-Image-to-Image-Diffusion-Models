@@ -138,7 +138,7 @@ class DenoisingDataset(data.Dataset):
         return len(self.imgs)
 
 class ShadingDataset(data.Dataset):
-    def __init__(self, data_root, data_len=-1, image_size=[256, 256], resize = 1024, val = False):
+    def __init__(self, data_root, data_len=-1, image_size=[256, 256], resize = 512, val = False):
         self.img_path = data_root
         self.resize = resize
         self.val = val
