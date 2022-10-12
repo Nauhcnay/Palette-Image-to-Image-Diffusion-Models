@@ -59,6 +59,7 @@ class Network(BaseNetwork):
         return posterior_mean, posterior_log_variance_clipped
 
     def p_mean_variance(self, y_t, t, clip_denoised: bool, y_cond=None):
+        # what this function does?
         noise_level = extract(self.gammas, t, x_shape=(1, 1)).to(y_t.device)
         y_0_hat = self.predict_start_from_noise(
                 y_t, t=t, noise=self.denoise_fn(torch.cat([y_cond, y_t], dim=1), noise_level))
@@ -86,6 +87,7 @@ class Network(BaseNetwork):
 
     @torch.no_grad()
     def restoration(self, y_cond, y_t=None, y_0=None, mask=None, sample_num=8):
+        # generate sample from the trained model
         b, c, h, w = y_cond.shape
 
         assert self.num_timesteps > sample_num, 'num_timesteps must greater than sample_num'
@@ -137,6 +139,7 @@ def default(val, d):
     return d() if isfunction(d) else d
 
 def extract(a, t, x_shape=(1,1,1,1)):
+    # what this function does?
     b, *_ = t.shape
     out = a.gather(-1, t)
     return out.reshape(b, *((1,) * (len(x_shape) - 1)))

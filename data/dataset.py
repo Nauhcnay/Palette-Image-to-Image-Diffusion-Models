@@ -286,7 +286,7 @@ class ShadingDataset(data.Dataset):
         _, shad_np = cv2.threshold(shad_np, 127, 255, cv2.THRESH_BINARY)
 
         # resize opened images
-        h, w = shad_np.shape
+        h, w = shad_np.shape[0], shad_np[1]
         h, w = self.resize_hw(h, w)
         flat_np = cv2.resize(flat_np, (w, h), interpolation = cv2.INTER_AREA)
         # line_np = cv2.resize(line_np, (w, h), interpolation = cv2.INTER_AREA)
@@ -298,6 +298,13 @@ class ShadingDataset(data.Dataset):
             flat_np, shad_np = img_list
             bbox = self.random_bbox(flat_np)
             flat_np, shad_np = self.crop([flat_np, shad_np], bbox)
+        else:
+            # we need to make sure this validation input is acceptable for unet
+            h, w = flat_np.shape[0], flat_np.shape[1]
+            h = int(h // 16 * 16)
+            w = int(w // 16 * 16)
+            flat_np = flat_np[:h, :w, ...]
+            shad_np = shad_np[:h, :w, ...]
         
         # clip values
         flat_np = flat_np.clip(0, 255)
