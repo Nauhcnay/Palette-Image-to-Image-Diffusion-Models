@@ -286,7 +286,7 @@ class ShadingDataset(data.Dataset):
         _, shad_np = cv2.threshold(shad_np, 127, 255, cv2.THRESH_BINARY)
 
         # resize opened images
-        h, w = shad_np.shape[0], shad_np[1]
+        h, w = shad_np.shape[0], shad_np.shape[1]
         h, w = self.resize_hw(h, w)
         flat_np = cv2.resize(flat_np, (w, h), interpolation = cv2.INTER_AREA)
         # line_np = cv2.resize(line_np, (w, h), interpolation = cv2.INTER_AREA)
