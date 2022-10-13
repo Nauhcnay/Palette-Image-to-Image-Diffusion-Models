@@ -27,14 +27,14 @@
                 "validation_split": 8, // percent or number 
                 "args":{ // arguments to initialize train_dataloader
                     "batch_size": 28, // batch size in each gpu, this setting is for a100 80g!
-                    "num_workers": 0,
+                    "num_workers": 8,
                     "shuffle": true,
                     "pin_memory": true,
                     "drop_last": true
                 },
                 "val_args":{ // arguments to initialize valid_dataloader, will overwrite the parameters in train_dataloader
                     "batch_size": 1, // batch size in each gpu
-                    "num_workers": 0,
+                    "num_workers": 8,
                     "shuffle": false,
                     "pin_memory": true,
                     "drop_last": true
@@ -129,7 +129,7 @@
     "train": { // arguments for basic training
         "n_epoch": 1e8, // max epochs, not limited now
         "n_iter": 1e8, // max interations
-        "val_epoch": 50, // valdation every specified number of epochs
+        "val_epoch": 200, // valdation every specified number of epochs
         "save_checkpoint_epoch": 10,
         "log_iter": 1e3, // log every specified number of iterations
         "tensorboard" : true // tensorboardX enable
