@@ -62,6 +62,7 @@ class Palette(BaseModel):
         self.gt_image = self.set_device(data.get('gt_image'))
         # self.mask = self.set_device(data.get('mask'))
         # self.mask_image = data.get('mask_image')
+        self.label = self.set_device(data.get('ray_dir'))
         self.path = data['path']
         self.batch_size = len(data['path'])
     
@@ -109,7 +110,7 @@ class Palette(BaseModel):
             self.set_input(train_data)
             self.optG.zero_grad()
             # loss = self.netG(self.gt_image, self.cond_image, mask=self.mask)
-            loss = self.netG(self.gt_image, self.cond_image)
+            loss = self.netG(self.gt_image, self.label, self.cond_image)
             loss.backward()
             self.optG.step()
 

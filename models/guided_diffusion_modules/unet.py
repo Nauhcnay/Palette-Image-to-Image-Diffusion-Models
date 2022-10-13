@@ -447,7 +447,11 @@ class UNet(nn.Module):
                 ds *= 2
                 self._feature_size += ch
 
+        # here we embed label into the feature by using additional conv layer
+        self.middle_embed_label = nn.Conv2d(ch + 1, ch, 1, padding=0)
+        
         self.middle_block = EmbedSequential(
+            # + 1 for the label channel
             ResBlock(
                 ch,
                 cond_embed_dim,
@@ -522,7 +526,7 @@ class UNet(nn.Module):
             zero_module(nn.Conv2d(input_ch, out_channel, 3, padding=1)),
         )
 
-    def forward(self, x, gammas):
+    def forward(self, x, label, gammas):
         """
         Apply the model to an input batch.
         :param x: an [N x 2 x ...] Tensor of inputs (B&W)
@@ -537,6 +541,13 @@ class UNet(nn.Module):
         for module in self.input_blocks:
             h = module(h, emb)
             hs.append(h)
+        # we could insert the label at the middle, or we could insert the label at the top
+        # but which one seems better?
+        # now we proved that the middle option works, so we should try this first
+        b, _, height, width = h.shape
+        label = label.expand((b, 1, height, width))
+        # hope this layer will not effect the results...
+        h = self.middle_embed_label(torch.cat((h, label), dim = 1))
         h = self.middle_block(h, emb)
         for module in self.output_blocks:
             h = torch.cat([h, hs.pop()], dim=1)

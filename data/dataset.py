@@ -280,8 +280,8 @@ class ShadingDataset(data.Dataset):
         # merge line and flat
         flat_np = self.remove_alpha(flat_np)
         flat_np = flat_np * (1 - np.expand_dims(line_np[:, :, 3], axis = -1) / 255)
-        # flat_np = cv2.cvtColor(flat_np.astype(np.uint8), cv2.COLOR_RGB2GRAY)
-        # line_np = 255 - line_np[:, :, 3] # remove alpha channel, but yes, we use alpha channel as the line drawing
+        flat_np = cv2.cvtColor(flat_np.astype(np.uint8), cv2.COLOR_RGB2GRAY)
+        line_np = 255 - line_np[:, :, 3] # remove alpha channel, but yes, we use alpha channel as the line drawing
         shad_np = self.remove_alpha(shad_np, gray = True) 
         _, shad_np = cv2.threshold(shad_np, 127, 255, cv2.THRESH_BINARY)
 
@@ -289,15 +289,15 @@ class ShadingDataset(data.Dataset):
         h, w = shad_np.shape[0], shad_np.shape[1]
         h, w = self.resize_hw(h, w)
         flat_np = cv2.resize(flat_np, (w, h), interpolation = cv2.INTER_AREA)
-        # line_np = cv2.resize(line_np, (w, h), interpolation = cv2.INTER_AREA)
+        line_np = cv2.resize(line_np, (w, h), interpolation = cv2.INTER_AREA)
         shad_np = cv2.resize(shad_np, (w, h), interpolation = cv2.INTER_NEAREST)
 
         # random flip and crop to patches
         if self.val == False:
-            img_list, label = self.random_flip([flat_np, shad_np], label)
-            flat_np, shad_np = img_list
+            img_list, label = self.random_flip([flat_np, shad_np, line_np], label)
+            flat_np, shad_np, line_np = img_list
             bbox = self.random_bbox(flat_np)
-            flat_np, shad_np = self.crop([flat_np, shad_np], bbox)
+            flat_np, shad_np, line_np = self.crop([flat_np, shad_np, line_np], bbox)
         else:
             # we need to make sure this validation input is acceptable for unet
             h, w = flat_np.shape[0], flat_np.shape[1]
@@ -305,22 +305,24 @@ class ShadingDataset(data.Dataset):
             w = int(w // 16 * 16)
             flat_np = flat_np[:h, :w, ...]
             shad_np = shad_np[:h, :w, ...]
+            line_np = line_np[:h, :w, ...]
         
         # clip values
         flat_np = flat_np.clip(0, 255)
         shad_np = shad_np.clip(0, 255)
 
         # to tensors
-        label = torch.Tensor([label]).expand(1, flat_np.shape[0], flat_np.shape[1])
+        # https://github.com/pytorch/pytorch/issues/9410
+        # extend the dimensiion of label, but we will expand it in the network
+        label = torch.Tensor([label])[(...,) + (None,) * 2]
         flat = self.to_tensor(flat_np / 255)
-        flat = torch.cat((flat, label), dim = 0)
         shad = self.to_tensor(1 - shad_np / 255)
 
         # we should keep this part unchanged
         ret['gt_image'] = shad.float()
-        ret['cond_image'] = flat.float() # the input image
+        ret['cond_image'] = flat.float() # the condition
+        ret['ray_dir'] = label # we also need to pass the label to UNet
         ret['path'] = line_path.rsplit("/")[-1].rsplit("\\")[-1]
-        # ret['path'] = None
         return ret
 
 
