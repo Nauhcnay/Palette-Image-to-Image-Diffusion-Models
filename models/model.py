@@ -148,7 +148,8 @@ class Palette(BaseModel):
                         self.output, self.visuals = self.netG.restoration(self.cond_image, y_t=self.cond_image, 
                             y_0=self.gt_image, mask=self.mask, sample_num=self.sample_num)
                     else:
-                        self.output, self.visuals = self.netG.restoration(self.cond_image, sample_num=self.sample_num)
+                        self.output, self.visuals = self.netG.restoration(self.cond_image, self.label,
+                            sample_num=self.sample_num)
                     
                 self.iter += self.batch_size
                 self.writer.set_iter(self.epoch, self.iter, phase='val')
